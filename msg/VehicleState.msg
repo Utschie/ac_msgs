@@ -6,7 +6,7 @@ std_msgs/Header header
 # 挡位（编码实测定案）：0=R 1=N 2..8=1..7 挡
 int32 gear
 
-# CarPhysicsState.speed 原始值——单位待实测定案（疑似 m/s；出生/维修区瞬间
+# CarPhysicsState.speed 原始值，单位 m/s（实测定案 2026-08-18；出生/维修区瞬间
 # 可能读到假值，勿以单次读数下结论）
 float32 speed
 

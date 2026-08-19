@@ -18,6 +18,8 @@ float32 hand_brake          # [0, 1]
 
 # 绝对挡位：0=R 1=N 2..8=1..7；GEAR_NO_CHANGE=保持当前挡位。
 # vJoy 后端用"逐挡脉冲+挡位反馈"逼近绝对挡位；SHM 后端直写。
+# ⚠️ 陷阱：本字段默认值是 0（= R 挡！）。ros2 topic pub 若不显式写此字段，
+# 车会被挂到倒挡（实测 2026-08-18）。要"保持当前挡位"必须显式发 -100。
 int32 requested_gear_index
 int32 GEAR_NO_CHANGE=-100
 

@@ -18,7 +18,7 @@ AC ↔ ROS2 桥接的控制/状态消息定义（ament_cmake + rosidl 接口包�
 - **GO 信号**（`VehicleState.flags` bit0）：正赛红灯倒计时结束熄灯即 GO——
   自动驾驶栈以它决定起步时机；bit1=倒计时进行中
 - **速度单位**：`VehicleState.speed` 为 `CarPhysicsState.speed` 原始值，
-  **单位待定案（疑似 m/s）**——定案前下游自行确认
+  **单位 m/s（实测定案 2026-08-18）**
 
 ## 构建
 
