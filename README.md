@@ -9,6 +9,7 @@ AC ↔ ROS2 桥接的控制/状态消息定义（ament_cmake + rosidl 接口包�
 |---|---|---|---|
 | `VehicleControl` | ROS → bridge → 游戏 | 驾驶命令（转向/油门/刹车/离合/手刹/挡位/按钮/接管开关），发布到 `/ac/vehicle_cmd`，**RELIABLE QoS、定频流式（建议 ≥20Hz）**；停止发布 ≈0.5s 后自动弃权回人工 | `shared/zenoh_payload.h` `ControlPayload`(32B)，zenoh key `ac/vehicle_cmd` |
 | `VehicleState` | 游戏 → bridge → ROS | 挡位/车速/GO 发车信号反馈，`/ac/vehicle_state` | `VehicleStatePayload`(20B)，key `ac/vehicle_state` |
+| `ExpertCtrl` | 游戏 → bridge → ROS | **专家操作动作标签（v5 模仿学习）**：每场景帧一条，`/ac/expert_ctrl`；`frame_id` 与 `/ac/ego_pose` 同源严格对齐 = (观测, 动作) 配对锚点；`override=true` 为自动驾驶接管值（训练时过滤）；量纲 steer[-1,1] / throttle·brake·clutch·hand_brake[0,1] | `ExpertCtrlPayload`(44B)，key `ac/expert_ctrl` |
 
 ## 定案约定（实测定案，改动须同步 shared/ 与 ac_sim_bridge/）
 
