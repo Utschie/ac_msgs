@@ -13,6 +13,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/VehicleState.msg"
   "msg/GameControl.msg"
   "msg/GameState.msg"
+  "msg/ExpertCtrl.msg"
 
   DEPENDENCIES
   std_msgs
