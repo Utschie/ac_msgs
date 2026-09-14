@@ -14,6 +14,9 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/GameControl.msg"
   "msg/GameState.msg"
   "msg/ExpertCtrl.msg"
+  "msg/Telemetry.msg"
+  "msg/Timing.msg"
+  "msg/TelemetryStatic.msg"
 
   DEPENDENCIES
   std_msgs
