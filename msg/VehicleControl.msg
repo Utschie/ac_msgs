@@ -7,7 +7,7 @@ std_msgs/Header header
 # 停止发布命令后 ~0.5s（bridge RX_TIMEOUT_MS）自动弃权回人工，无需显式发送 false。
 bool override_enabled
 
-# 模拟量。语义随 Windows 端 bridge_control.ini 的 MODE 不同：
+# 模拟量。语义随 Windows 端 control.ini 的 MODE 不同：
 #   shm  = 最终归一化量直写 CarControls（模型接口推荐，语义确定）
 #   vjoy = 虚拟方向盘/踏板，经 AC 原生输入处理（受旋转角度/gamma/死区影响）
 float32 steering            # [-1, 1]
