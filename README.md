@@ -1,27 +1,32 @@
 # ac_msgs
 
-AC ↔ ROS2 桥接的控制/状态消息定义（ament_cmake + rosidl 接口包）。与 `shared/`
-的线格式契约一一对应，由 `ac_ros2_bridge`（转发）与下游自动驾驶栈（发布/订阅）使用。
+ROS 2 message definitions for the AC Simulator Suite's ROS bridge.
 
-## 消息
+Used by [ac_ros2_bridge](https://github.com/Utschie/ac_ros2_bridge) to talk
+to the suite's Windows-side bridge over Zenoh, and by your downstream stack
+(planning / control / imitation learning) to consume and command the
+simulation.
 
-| 消息 | 方向 | 用途 | 线格式对应 |
-|---|---|---|---|
-| `VehicleControl` | ROS → bridge → 游戏 | 驾驶命令（转向/油门/刹车/离合/手刹/挡位/按钮/接管开关），发布到 `/ac/vehicle_cmd`，**RELIABLE QoS、定频流式（建议 ≥20Hz）**；停止发布 ≈0.5s 后自动弃权回人工 | `shared/zenoh_payload.h` `ControlPayload`(32B)，zenoh key `ac/vehicle_cmd` |
-| `VehicleState` | 游戏 → bridge → ROS | 挡位/车速/GO 发车信号反馈，`/ac/vehicle_state` | `VehicleStatePayload`(20B)，key `ac/vehicle_state` |
-| `ExpertCtrl` | 游戏 → bridge → ROS | **专家操作动作标签（v5 模仿学习）**：每场景帧一条，`/ac/expert_ctrl`；`frame_id` 与 `/ac/ego_pose` 同源严格对齐 = (观测, 动作) 配对锚点；`override=true` 为自动驾驶接管值（训练时过滤）；量纲 steer[-1,1] / throttle·brake·clutch·hand_brake[0,1] | `ExpertCtrlPayload`(44B)，key `ac/expert_ctrl` |
+## Messages
 
-## 定案约定（实测定案，改动须同步 shared/ 与 ac_sim_bridge/）
+| Message | Direction | Purpose |
+|---|---|---|
+| `VehicleControl` | ROS → game | Driving commands (steering / throttle / brake / clutch / handbrake / gear / buttons / override switch). Publish to `/ac/vehicle_cmd` at a steady rate (≥ 20 Hz recommended); stop publishing ≈ 0.5 s to hand control back to the human. RELIABLE QoS. |
+| `VehicleState` | game → ROS | Gear / speed (m/s) / race-start flags, `/ac/vehicle_state` |
+| `GameState` | game → ROS | Session type and flags, `/ac/game_state` |
+| `GameControl` | ROS → game | Session control (start / pause / resume / restart), `/ac/game_cmd` |
+| `ExpertCtrl` | game → ROS | Per-frame expert driving actions, `/ac/expert_ctrl` — frame-aligned with `/ac/ego_pose`, i.e. (observation, action) pairs for imitation learning |
+| `Telemetry` | game → ROS | Full physics telemetry, `/ac/telemetry` (one message per scene frame) |
+| `Timing` | game → ROS | Lap timing / race state, `/ac/timing` |
+| `TelemetryStatic` | game → ROS | Car / track constants snapshot, `/ac/telemetry_static` (latched) |
+| `RunState` | game → ROS | Run boundary events (begin / end / flag), `/ac/run_state` |
 
-- **挡位编码**：`0=R、1=N、2..8=1..7 挡`；`GEAR_NO_CHANGE=-100` 哨兵表示不改挡
-- **按钮边沿语义**：`gear_up/gear_dn` 为按压事件（插件 0→1 边沿检测，一帧一挡；
-  挡位链线性 `R↔N↔1..7`，跨挡由后端逐挡逼近）
-- **GO 信号**（`VehicleState.flags` bit0）：正赛红灯倒计时结束熄灯即 GO——
-  自动驾驶栈以它决定起步时机；bit1=倒计时进行中
-- **速度单位**：`VehicleState.speed` 为 `CarPhysicsState.speed` 原始值，
-  **单位 m/s（实测定案 2026-08-18）**
+Conventions: gear `0=R, 1=N, 2..8 = gears 1..7` (`-100` = no change);
+wheel arrays are ordered FL / FR / RL / RR. All data follows the suite-wide
+coordinate convention (X fwd / Y left / Z up; world Z = height) — see the
+suite's data-format documentation.
 
-## 构建
+## Build
 
 ```bash
 colcon build --packages-select ac_msgs
@@ -29,8 +34,4 @@ source install/setup.bash
 ros2 interface show ac_msgs/msg/VehicleControl
 ```
 
-## 依赖
-
-- ROS2（Humble/Jazzy 均可）+ `rosidl_default_generators`（标准组件，随 base 装）
-- 线格式源头 `../shared/zenoh_payload.h`（本包注释与其保持同步，
-  由 `ac_ros2_bridge/test_decode.py` 守护一致性）
+Requires ROS 2 Humble or newer.

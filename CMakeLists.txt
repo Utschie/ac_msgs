@@ -17,6 +17,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Telemetry.msg"
   "msg/Timing.msg"
   "msg/TelemetryStatic.msg"
+  "msg/RunState.msg"
 
   DEPENDENCIES
   std_msgs

@@ -1,21 +1,23 @@
-# 游戏会话控制命令（Lin -> Win 下行）。线格式：shared/zenoh_payload.h
-# GameControlPayload(4B)，zenoh key "ac/game_cmd"。与 VehicleControl（纯驾驶）分离。
-# 全部为**边沿语义**：bridge 收到后保持 ~0.5s 自动清零，插件在 0->1 跳变时
-# 触发一次对应游戏函数；重复触发 = 再发一条。
+# Game session control command (Linux -> Windows downlink). zenoh key
+# "ac/game_cmd". Separate from VehicleControl (pure driving).
+# All fields are **edge-triggered**: the bridge holds them for ~0.5 s then
+# auto-clears; the plugin fires the corresponding game action once per
+# 0->1 transition. To trigger again, send another message.
 std_msgs/Header header
 
-# 开始比赛（HUD"开始游戏"按钮标准链路：Sim::startGame → 淡入 → 边栏消失 →
-# 操控解锁 → 10s 灯序倒计时）。倒计时已开始/比赛已开时置位无效。
+# Start the race (standard "start game" flow: fade-in, side panels hide,
+# controls unlock, 10 s light-sequence countdown). No effect if the
+# countdown has already started or the race is already live.
 bool start_race
 
-# 暂停物理（Sim::setPauseMode(true)）
+# Pause physics
 bool pause
 
-# 恢复物理（Sim::setPauseMode(false)）
+# Resume physics
 bool resume
 
-# 重开当前会话（RaceManager::restartCurrentSession，回发车位重来）
+# Restart the current session (back to the grid)
 bool restart_session
 
-# 跳到下一会话（RaceManager::skipCurrentSession，如练习→排位→正赛推进）
+# Skip to the next session (e.g. practice -> qualifying -> race)
 bool skip_session

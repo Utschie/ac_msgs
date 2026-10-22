@@ -1,34 +1,36 @@
-# 专家操作上行（Win -> Lin，v5 模仿学习）。线格式：shared/zenoh_payload.h
-# ExpertCtrlPayload(44B)，zenoh key "ac/expert_ctrl"，由 ac_sim_bridge 主循环
-# 每场景帧发布（frame_id 与 ac/ego_pose 的 frame_id 同源严格对齐——模仿学习
-# 的 (观测, 动作) 配对锚点）。
+# Expert driving actions uplink (Windows -> Linux, for imitation learning).
+# zenoh key "ac/expert_ctrl", published by the bridge once per scene frame
+# (frame_id strictly aligned with ac/ego_pose — the (observation, action)
+# pairing anchor for imitation learning).
 #
-# 值 = acquireControls detour 快照的"实际施加控制"：
-#   人类专家驾驶时 = 设备原生输入（方向盘/踏板）；自动驾驶接管时 = 覆盖值
-#   （此时 override=true，训练时应过滤这些样本）。
+# Values are the actually-applied controls, snapshotted from the game's
+# control-acquisition path: while the human expert drives they are the raw
+# device inputs (wheel/pedals); while the autonomy stack overrides they are
+# the override values (override=true — filter these samples when training).
 std_msgs/Header header
 
-# 场景帧号（与 /ac/ego_pose 的 frame_id 一致——配对键）
+# Scene frame id (identical to /ac/ego_pose's frame_id — the pairing key)
 uint64 frame_id
 
-# 方向盘 [-1, 1]（负=左，正=右）
+# Steering wheel [-1, 1] (negative = left, positive = right)
 float32 steer
 
-# 油门 [0, 1]
+# Throttle [0, 1]
 float32 throttle
 
-# 刹车 [0, 1]
+# Brake [0, 1]
 float32 brake
 
-# 离合 [0, 1]
+# Clutch [0, 1]
 float32 clutch
 
-# 手刹 [0, 1]
+# Hand brake [0, 1]
 float32 hand_brake
 
-# 本帧窗口内出现过的升挡 / 降挡动作（0/1，边沿脉冲）
+# Gear-up / gear-down action within this frame's window (0/1, edge pulse)
 bool gear_up
 bool gear_dn
 
-# true = 该值是自动驾驶接管时的输出（非人类专家，训练时过滤）
+# true = value produced while the autonomy stack was overriding (not the
+# human expert — filter when training)
 bool override

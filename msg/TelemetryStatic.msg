@@ -1,18 +1,17 @@
-# 遥测静态快照（Win -> Lin 上行，v1 2026-09-13）。线格式：shared/zenoh_payload.h
-# TelemetryStaticPayload(300B)。zenoh key "ac/telemetry_static"，仅 acpmf
-# static.numberOfSessions 变化时发布；同一份内容由 ac_sim_bridge 落盘为
-# 会话目录 telemetry_static.jsonl。
+# Telemetry static snapshot (Windows -> Linux uplink). zenoh key
+# "ac/telemetry_static", published only when the session changes; the same
+# content is dumped by the bridge to the session's telemetry_static.jsonl.
 std_msgs/Header header
 
-uint32 session_epoch        # acpmf static numberOfSessions
+uint32 session_epoch        # session counter from the game's telemetry page
 uint32 num_cars
 int32 sector_count
 float32 max_torque          # Nm
 float32 max_power           # hp
 int32 max_rpm
 float32 max_fuel            # l
-float32[4] suspension_max_travel  # m
-float32[4] tyre_radius            # m（未受载）
+float32[4] suspension_max_travel  # m, FL/FR/RL/RR
+float32[4] tyre_radius            # m (unloaded), FL/FR/RL/RR
 float32 max_turbo_boost
 uint32 penalties_enabled
 float32 aid_fuel_rate
