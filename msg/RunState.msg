@@ -8,6 +8,8 @@ uint64 timestamp_ns        # event time (renderer clock)
 uint32 event_type          # event type constant (see below)
 uint32 reason_code         # RUN_END: 0=results_menu 1=restart 2=key_change
                            # 3=metadata_invalid 4=scene_stale
+                           # 6=session_gen_change (online server session
+                           # switch via session generation, M22)
                            # BARRIER: 5=session_gen_fuse
 uint32 run_id              # N of runs/epoch_N (most recent when idle)
 uint32 session_epoch       # GO counter
